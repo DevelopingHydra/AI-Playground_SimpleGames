@@ -2,11 +2,10 @@ import { GameManager } from "./GameManager";
 import { PlayerTurn } from "./PlayerTurn";
 import { WinState } from "./WinState";
 import { Point } from "./Point";
+import { deepClone } from "./util";
 
 export class AI {
     private gameManager: GameManager;
-
-    // private ownPlayerTurn: PlayerTurn = PlayerTurn.PlayerTwo;
 
     public constructor(gameManager: GameManager) {
         this.gameManager = gameManager;
@@ -20,26 +19,40 @@ export class AI {
         this.gameManager.makeTurn(turn);
     }
 
-    private evaluateBestTurn(field: number[][], currentTurn: PlayerTurn): Point {
-        const possiblePoints = this.getPossibleTurnsToPlayOnField(field, currentTurn);
-        const otherPlayer = this.getOtherPlayer(currentTurn);
+    private evaluateBestTurn(field: number[][], currentPlayer: PlayerTurn): Point {
+        const possiblePoints = this.getPossibleTurnsToPlayOnField(deepClone(field), currentPlayer);
+        const otherPlayer = this.getOtherPlayer(currentPlayer);
 
-        // for (let i = 0; i < possiblePoints.length; i++) {
-        //     const possibleTurn = possiblePoints[i];
-        //     // play the possible Turn
-        //     const newField = this.getFieldWithTurnPlayedOnIt(field, currentTurn, possibleTurn);
-        //     // now let the other player find the best move
-        //     const otherPlayersBestMove:Point = this.evaluateBestTurn(newField, otherPlayer);
-            
-        // }
+        let currentHighestBoardValue: number = -1;
+        let currentBestTurn: Point = new Point(-1, -1);
+        for (let i = 0; i < possiblePoints.length; i++) {
+            const possibleTurn = possiblePoints[i];
+            // play the possible Turn
+            const newField = this.getFieldWithTurnPlayedOnIt(deepClone(field), currentPlayer, possibleTurn);
+            let currentBoardValue = this.calcBoardValue(newField, currentPlayer);
+            if (currentBoardValue > currentHighestBoardValue) {
+                currentHighestBoardValue = currentBoardValue;
+                currentBestTurn = possibleTurn;
+                break;
+            }
+            // now let the other player find the best move
+            const otherPlayersBestMove: Point = this.evaluateBestTurn(deepClone(newField), otherPlayer);
+            const newestField = this.getFieldWithTurnPlayedOnIt(deepClone(newField), otherPlayer, otherPlayersBestMove);
+            // check if we have found a new best turn
+            currentBoardValue = this.calcBoardValue(deepClone(newestField), currentPlayer);
+            if (currentBoardValue > currentHighestBoardValue) {
+                currentHighestBoardValue = currentBoardValue;
+                currentBestTurn = possibleTurn;
+            }
+        }
 
 
 
-        return possiblePoints[0];
+        return currentBestTurn;
     }
 
-    private calcBoardValue(currentTurn: PlayerTurn): number {
-        const gameState = this.gameManager.isGameOver();
+    private calcBoardValue(field: number[][], currentTurn: PlayerTurn): number {
+        const gameState = this.gameManager.isGameOver(field);
         if (gameState === WinState.Draw || gameState === WinState.NoOneWonYet) {
             return 0;
         } else if (gameState === WinState.PlayerOneWon && currentTurn === PlayerTurn.PlayerOne) {
@@ -74,6 +87,6 @@ export class AI {
 
     private getFieldWithTurnPlayedOnIt(field: number[][], playerTurnWhichPlayes: PlayerTurn, pointToPlay: Point): number[][] {
         field[pointToPlay.x][pointToPlay.y] = playerTurnWhichPlayes;
-        return field;
+        return deepClone(field);
     }
 }

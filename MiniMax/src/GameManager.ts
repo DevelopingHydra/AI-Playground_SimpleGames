@@ -4,6 +4,7 @@ import { Board } from "./Board";
 import { WinState } from "./WinState";
 import { AI } from "./AI";
 import { Point } from "./Point";
+import { deepClone } from "./util";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;
@@ -52,7 +53,7 @@ export class GameManager {
             if (this.isFieldEmpty(point)) {
                 this.fields[point.x][point.y] = this.playerOnTurn;
 
-                const gameResult = this.isGameOver();
+                const gameResult = this.isGameOver(this.fields);
                 if (gameResult !== WinState.NoOneWonYet) {
                     this.stopGame();
                     if (gameResult === WinState.Draw)
@@ -89,15 +90,15 @@ export class GameManager {
         this.outputManager.writeTurn(this.playerOnTurn);
     }
 
-    public isGameOver(): WinState {
+    public isGameOver(fieldToCheck:number[][]): WinState {
         // horizontal
-        for (let i = 0; i < this.fields.length; i++) {
+        for (let i = 0; i < fieldToCheck.length; i++) {
             let allFieldsPlayerOne = true;
             let allFieldsPlayerTwo = true;
-            for (let j = 0; j < this.fields[i].length; j++) {
-                if (this.fields[i][j] !== PlayerTurn.PlayerOne)
+            for (let j = 0; j < fieldToCheck[i].length; j++) {
+                if (fieldToCheck[i][j] !== PlayerTurn.PlayerOne)
                     allFieldsPlayerOne = false;
-                if (this.fields[i][j] !== PlayerTurn.PlayerTwo)
+                if (fieldToCheck[i][j] !== PlayerTurn.PlayerTwo)
                     allFieldsPlayerTwo = false;
             }
             if (allFieldsPlayerOne)
@@ -107,13 +108,13 @@ export class GameManager {
         }
 
         // vertical
-        for (let j = 0; j < this.fields.length; j++) {
+        for (let j = 0; j < fieldToCheck.length; j++) {
             let allFieldsPlayerOne = true;
             let allFieldsPlayerTwo = true;
-            for (let i = 0; i < this.fields[j].length; i++) {
-                if (this.fields[i][j] !== PlayerTurn.PlayerOne)
+            for (let i = 0; i < fieldToCheck[j].length; i++) {
+                if (fieldToCheck[i][j] !== PlayerTurn.PlayerOne)
                     allFieldsPlayerOne = false;
-                if (this.fields[i][j] !== PlayerTurn.PlayerTwo)
+                if (fieldToCheck[i][j] !== PlayerTurn.PlayerTwo)
                     allFieldsPlayerTwo = false;
             }
             if (allFieldsPlayerOne)
@@ -123,25 +124,25 @@ export class GameManager {
         }
 
         // diagonal
-        if (this.fields[0][0] === this.fields[1][1] && this.fields[1][1] === this.fields[2][2]) {
-            if (this.fields[1][1] === PlayerTurn.PlayerOne)
+        if (fieldToCheck[0][0] === fieldToCheck[1][1] && fieldToCheck[1][1] === fieldToCheck[2][2]) {
+            if (fieldToCheck[1][1] === PlayerTurn.PlayerOne)
                 return WinState.PlayerOneWon;
-            else if (this.fields[1][1] === PlayerTurn.PlayerTwo)
+            else if (fieldToCheck[1][1] === PlayerTurn.PlayerTwo)
                 return WinState.PlayerTwoWon;
         }
 
-        if (this.fields[2][0] === this.fields[1][1] && this.fields[1][1] === this.fields[0][2]) {
-            if (this.fields[1][1] === PlayerTurn.PlayerOne)
+        if (fieldToCheck[2][0] === fieldToCheck[1][1] && fieldToCheck[1][1] === fieldToCheck[0][2]) {
+            if (fieldToCheck[1][1] === PlayerTurn.PlayerOne)
                 return WinState.PlayerOneWon;
-            else if (this.fields[1][1] === PlayerTurn.PlayerTwo)
+            else if (fieldToCheck[1][1] === PlayerTurn.PlayerTwo)
                 return WinState.PlayerTwoWon;
         }
 
         // check for draw
         let isEveryFieldUsedUp = true;
-        for (let j = 0; j < this.fields.length; j++) {
-            for (let i = 0; i < this.fields[j].length; i++) {
-                if (this.fields[i][j] === -1) {
+        for (let j = 0; j < fieldToCheck.length; j++) {
+            for (let i = 0; i < fieldToCheck[j].length; i++) {
+                if (fieldToCheck[i][j] === -1) {
                     isEveryFieldUsedUp = false;
                     break;
                 }
@@ -188,7 +189,7 @@ export class GameManager {
     /* ###### */
 
     public getFields(): number[][] {
-        return this.fields;
+        return deepClone(this.fields);
     }
 
     public isGameRunning(): boolean {

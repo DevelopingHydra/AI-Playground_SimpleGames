@@ -1,3 +1,3 @@
 export enum PlayerTurn {
-    PlayerOne, PlayerTwo
+    PlayerOne = 1, PlayerTwo = 2
 }
