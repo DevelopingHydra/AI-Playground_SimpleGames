@@ -11,9 +11,9 @@ if (canvas !== null && infoElement !== null) {
         const outputManager: OutputManager = new OutputManager(infoElement);
         const gameManager: GameManager = new GameManager(outputManager, canvasContext);
 
-        const btnNewGame = document.getElementById("newGame");
-        const btnCanvasClick = document.getElementById("gameCanvas");
-        const cbShouldAIMakeNextMove = document.getElementById("cbShouldAIMakeMove");
+        const btnNewGame = <HTMLDivElement>document.getElementById("newGame");
+        const btnCanvasClick = <HTMLCanvasElement>document.getElementById("gameCanvas");
+        const cbShouldAIMakeNextMove = <HTMLInputElement>document.getElementById("cbShouldAIMakeMove");
 
         if (btnCanvasClick !== null && btnNewGame !== null && cbShouldAIMakeNextMove !== null) {
             btnNewGame.onclick = () => gameManager.newGame();
@@ -24,6 +24,7 @@ if (canvas !== null && infoElement !== null) {
                     gameManager.setShouldAIMakeNextMove(cb.checked);
                 }
             };
+            gameManager.setShouldAIMakeNextMove(cbShouldAIMakeNextMove.checked);
 
             // todo remove
             btnNewGame.click();

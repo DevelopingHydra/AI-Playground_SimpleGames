@@ -3,6 +3,7 @@ import { OutputManager } from "./OutputManager";
 import { Board } from "./Board";
 import { WinState } from "./WinState";
 import { AI } from "./AI";
+import { Point } from "./Point";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;
@@ -37,19 +38,19 @@ export class GameManager {
     }
 
     public onCanvasClick(event: MouseEvent): void {
-        const field = this.calcFieldFromPosition(event);
+        const targetPoint: Point = this.calcFieldFromPosition(event);
 
-        this.makeTurn(field[0], field[1]);
+        this.makeTurn(targetPoint);
     }
 
     public setShouldAIMakeNextMove(value: boolean) {
         this.shouldAIMakeNextMove = value;
     }
 
-    public makeTurn(x: number, y: number): boolean {
+    public makeTurn(point: Point): boolean {
         if (this.gameRunning) {
-            if (this.isFieldEmpty(x, y)) {
-                this.fields[x][y] = this.playerOnTurn;
+            if (this.isFieldEmpty(point)) {
+                this.fields[point.x][point.y] = this.playerOnTurn;
 
                 const gameResult = this.isGameOver();
                 if (gameResult !== WinState.NoOneWonYet) {
@@ -60,12 +61,12 @@ export class GameManager {
                         this.outputManager.writeAppendMessage("Game Over - PLAYER ONE WON");
                     else if (gameResult === WinState.PlayerTwoWon)
                         this.outputManager.writeAppendMessage("Game Over - PLAYER TWO WON");
-                }
+                } else {
+                    this.switchPlayer();
 
-                this.switchPlayer();
-
-                if (this.playerOnTurn === PlayerTurn.PlayerTwo && this.shouldAIMakeNextMove) {
-                    this.AI.makeTurn();
+                    if (this.playerOnTurn === PlayerTurn.PlayerTwo && this.shouldAIMakeNextMove) {
+                        this.AI.makeTurn();
+                    }
                 }
 
                 return true;
@@ -123,9 +124,16 @@ export class GameManager {
 
         // diagonal
         if (this.fields[0][0] === this.fields[1][1] && this.fields[1][1] === this.fields[2][2]) {
-            if (this.fields[0][0] === PlayerTurn.PlayerOne)
+            if (this.fields[1][1] === PlayerTurn.PlayerOne)
                 return WinState.PlayerOneWon;
-            else if (this.fields[0][0] === PlayerTurn.PlayerTwo)
+            else if (this.fields[1][1] === PlayerTurn.PlayerTwo)
+                return WinState.PlayerTwoWon;
+        }
+
+        if (this.fields[2][0] === this.fields[1][1] && this.fields[1][1] === this.fields[0][2]) {
+            if (this.fields[1][1] === PlayerTurn.PlayerOne)
+                return WinState.PlayerOneWon;
+            else if (this.fields[1][1] === PlayerTurn.PlayerTwo)
                 return WinState.PlayerTwoWon;
         }
 
@@ -146,7 +154,7 @@ export class GameManager {
         return WinState.NoOneWonYet;
     }
 
-    private calcFieldFromPosition(event: MouseEvent): [number, number] {
+    private calcFieldFromPosition(event: MouseEvent): Point {
         const canvasRect = this.canvasContext.canvas.getBoundingClientRect();
 
         const realX = event.clientX - canvasRect.left;
@@ -160,7 +168,7 @@ export class GameManager {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
 
-        return [x, y];
+        return new Point(x, y);
     }
 
     private initFields(): void {
@@ -173,8 +181,8 @@ export class GameManager {
         }
     }
 
-    private isFieldEmpty(x: number, y: number): boolean {
-        return this.fields[x][y] === -1;
+    private isFieldEmpty(point: Point): boolean {
+        return this.fields[point.x][point.y] === -1;
     }
 
     /* ###### */

@@ -15,12 +15,27 @@ export class AI {
     public makeTurn() {
         const ownPlayerTurn = this.gameManager.getCurrentPlayerTurn();
         const currentField = this.gameManager.getFields();
+        console.log("Finding best turn");
         const turn = this.evaluateBestTurn(currentField, ownPlayerTurn);
-        this.gameManager.makeTurn(turn.x, turn.y);
+        this.gameManager.makeTurn(turn);
     }
 
     private evaluateBestTurn(field: number[][], currentTurn: PlayerTurn): Point {
-        return new Point(0, 0);
+        const possiblePoints = this.getPossibleTurnsToPlayOnField(field, currentTurn);
+        const otherPlayer = this.getOtherPlayer(currentTurn);
+
+        // for (let i = 0; i < possiblePoints.length; i++) {
+        //     const possibleTurn = possiblePoints[i];
+        //     // play the possible Turn
+        //     const newField = this.getFieldWithTurnPlayedOnIt(field, currentTurn, possibleTurn);
+        //     // now let the other player find the best move
+        //     const otherPlayersBestMove:Point = this.evaluateBestTurn(newField, otherPlayer);
+            
+        // }
+
+
+
+        return possiblePoints[0];
     }
 
     private calcBoardValue(currentTurn: PlayerTurn): number {
@@ -36,7 +51,7 @@ export class AI {
         }
     }
 
-    private getPossibleTurns(field: number[][], currentTurn: PlayerTurn): Point[] {
+    private getPossibleTurnsToPlayOnField(field: number[][], currentTurn: PlayerTurn): Point[] {
         let points: Point[] = [];
 
         for (let i = 0; i < field.length; i++) {
@@ -48,5 +63,17 @@ export class AI {
         }
 
         return points;
+    }
+
+    private getOtherPlayer(currentPlayer: PlayerTurn): PlayerTurn {
+        if (currentPlayer === PlayerTurn.PlayerOne)
+            return PlayerTurn.PlayerTwo;
+        else
+            return PlayerTurn.PlayerOne;
+    }
+
+    private getFieldWithTurnPlayedOnIt(field: number[][], playerTurnWhichPlayes: PlayerTurn, pointToPlay: Point): number[][] {
+        field[pointToPlay.x][pointToPlay.y] = playerTurnWhichPlayes;
+        return field;
     }
 }
