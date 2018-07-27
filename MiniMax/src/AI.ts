@@ -15,11 +15,14 @@ export class AI {
         const ownPlayerTurn = this.gameManager.getCurrentPlayerTurn();
         const currentField = this.gameManager.getFields();
         console.log("Finding best turn");
-        const turn = this.evaluateBestTurn(currentField, ownPlayerTurn);
+        // const turn = this.evaluateBestTurn(currentField, ownPlayerTurn, 0);
+        const turn = this.evalBestTurnWithNegaMiniMax(currentField, ownPlayerTurn, 4);
         this.gameManager.makeTurn(turn);
     }
 
-    private evaluateBestTurn(field: number[][], currentPlayer: PlayerTurn): Point {
+    private evaluateBestTurn(field: number[][], currentPlayer: PlayerTurn, recursionDepth: number): Point {
+        console.log(recursionDepth);
+
         const possiblePoints = this.getPossibleTurnsToPlayOnField(deepClone(field), currentPlayer);
         const otherPlayer = this.getOtherPlayer(currentPlayer);
 
@@ -36,7 +39,7 @@ export class AI {
 
             if (boardState === WinState.NoOneWonYet) {
                 // now let the other player find the best move
-                const otherPlayersBestMove: Point = this.evaluateBestTurn(deepClone(newField), otherPlayer);
+                const otherPlayersBestMove: Point = this.evaluateBestTurn(deepClone(newField), otherPlayer, recursionDepth + 1);
                 const newestField = this.getFieldWithTurnPlayedOnIt(deepClone(newField), otherPlayer, otherPlayersBestMove);
 
                 // check if we have found a new best turn
@@ -75,6 +78,35 @@ export class AI {
         // console.log("")
 
         return currentBestTurn;
+    }
+
+    private savedMove: Point = new Point(-1, -1);
+    private evalBestTurnWithNegaMiniMax(field: number[][], currPlayer: PlayerTurn, depth: number) {
+        this.negaMiniMax(currPlayer, field,10,7);
+        return this.savedMove;
+    }
+    private negaMiniMax(currentPlayer: PlayerTurn, field: number[][], depth: number, desiredDepth: number): number {
+        const possibleMoves = this.getPossibleTurnsToPlayOnField(field, currentPlayer);
+
+        if (depth === 0 || possibleMoves.length === 0) {
+            return this.calcBoardValue(field, currentPlayer);
+        }
+
+        let maxValue = -Infinity;
+        for (let i = 0; i < possibleMoves.length; i++) {
+            const currMove = possibleMoves[i];
+
+            const newField = this.getFieldWithTurnPlayedOnIt(field, currentPlayer, currMove);
+            const otherPlayer = this.getOtherPlayer(currentPlayer);
+            const value = -this.negaMiniMax(otherPlayer, deepClone(newField), depth - 1, desiredDepth);
+            if (value > maxValue) {
+                maxValue = value;
+                // if (depth === desiredDepth) {
+                    this.savedMove = currMove;
+                // }
+            }
+        }
+        return maxValue;
     }
 
     private calcBoardValue(field: number[][], currentTurn: PlayerTurn): number {
