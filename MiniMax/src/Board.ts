@@ -97,6 +97,7 @@ export class Board {
 
     private paintFields(): void {
         const fields = this.gameManager.getFields();
+        
         for (let i = 0; i < fields.length; i++) {
             for (let j = 0; j < fields[i].length; j++) {
                 if (fields[i][j] !== -1) {

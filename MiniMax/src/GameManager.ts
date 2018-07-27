@@ -28,6 +28,7 @@ export class GameManager {
 
     public newGame(): void {
         this.initFields();
+        this.playerOnTurn = PlayerTurn.PlayerOne;
         this.board.startGame();
         this.outputManager.writeAppendMessage("Starting game");
         this.gameRunning = true;
@@ -52,6 +53,7 @@ export class GameManager {
         if (this.gameRunning) {
             if (this.isFieldEmpty(point)) {
                 this.fields[point.x][point.y] = this.playerOnTurn;
+                console.info("making move: " + point);
 
                 const gameResult = this.isGameOver(this.fields);
                 if (gameResult !== WinState.NoOneWonYet) {
@@ -90,7 +92,7 @@ export class GameManager {
         this.outputManager.writeTurn(this.playerOnTurn);
     }
 
-    public isGameOver(fieldToCheck:number[][]): WinState {
+    public isGameOver(fieldToCheck: number[][]): WinState {
         // horizontal
         for (let i = 0; i < fieldToCheck.length; i++) {
             let allFieldsPlayerOne = true;
@@ -180,6 +182,9 @@ export class GameManager {
                 this.fields[i][j] = -1;
             }
         }
+
+        // todo remove, for testing
+        // this.fields = [[-1, -1, 2], [-1, -1, -1], [-1, -1, -1]];
     }
 
     private isFieldEmpty(point: Point): boolean {

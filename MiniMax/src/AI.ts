@@ -27,26 +27,52 @@ export class AI {
         let currentBestTurn: Point = new Point(-1, -1);
         for (let i = 0; i < possiblePoints.length; i++) {
             const possibleTurn = possiblePoints[i];
+
             // play the possible Turn
             const newField = this.getFieldWithTurnPlayedOnIt(deepClone(field), currentPlayer, possibleTurn);
-            let currentBoardValue = this.calcBoardValue(newField, currentPlayer);
-            if (currentBoardValue > currentHighestBoardValue) {
-                currentHighestBoardValue = currentBoardValue;
-                currentBestTurn = possibleTurn;
-                break;
+            const boardState = this.gameManager.isGameOver(newField);
+
+            let currentBoardValue = -1;
+
+            if (boardState === WinState.NoOneWonYet) {
+                // now let the other player find the best move
+                const otherPlayersBestMove: Point = this.evaluateBestTurn(deepClone(newField), otherPlayer);
+                const newestField = this.getFieldWithTurnPlayedOnIt(deepClone(newField), otherPlayer, otherPlayersBestMove);
+
+                // check if we have found a new best turn
+                currentBoardValue = this.calcBoardValue(deepClone(newestField), currentPlayer);
+
+            } else {
+                // console.log("Current move would end the game ...")
+                // console.log("State is:")
+                // console.log(field);
+                // console.log(newField)
+                // console.log(possibleTurn);
+                // console.log(currentPlayer);
+                // console.log("---")
+
+                currentBoardValue = this.calcBoardValue(newField, currentPlayer);
             }
-            // now let the other player find the best move
-            const otherPlayersBestMove: Point = this.evaluateBestTurn(deepClone(newField), otherPlayer);
-            const newestField = this.getFieldWithTurnPlayedOnIt(deepClone(newField), otherPlayer, otherPlayersBestMove);
-            // check if we have found a new best turn
-            currentBoardValue = this.calcBoardValue(deepClone(newestField), currentPlayer);
+
             if (currentBoardValue > currentHighestBoardValue) {
                 currentHighestBoardValue = currentBoardValue;
                 currentBestTurn = possibleTurn;
             }
         }
 
+        if (currentBestTurn.x === -1 && currentBestTurn.y === -1) {
+            // there is no best move
+            // we always lose
+            // make any move
+            currentBestTurn = possiblePoints[0];
+            // console.log("Every move results in a lost game :(");
+        }
 
+        // console.log("Best move to field:");
+        // console.log(field);
+        // console.log(currentBestTurn);
+        // console.log(currentPlayer)
+        // console.log("")
 
         return currentBestTurn;
     }
