@@ -2,7 +2,6 @@ import { PlayerTurn } from "./Players/PlayerTurn";
 import { OutputManager } from "./OutputManager";
 import { Board } from "./Board";
 import { WinState } from "./WinState";
-import { NegaMiniMax } from "./Players/NegaMiniMax";
 import { Point } from "./Players/Point";
 import { deepClone } from "./Players/util";
 import { Player } from "./Players/Player";

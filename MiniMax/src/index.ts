@@ -1,7 +1,7 @@
 import { OutputManager } from "./OutputManager";
 import { GameManager } from "./GameManager";
 import { Player } from "./Players/Player";
-import { MiniMax } from "./Players/MiniMax";
+import { MyNegaMaxImplementation } from "./Players/MyNegaMaxImplementation";
 import { PlayerTurn } from "./Players/PlayerTurn";
 import { NegaMiniMax } from "./Players/NegaMiniMax";
 import { Human } from "./Players/Human";
@@ -55,7 +55,7 @@ function convertPlayerStringToPlayer(str: string, gameManager: GameManager, ownP
         case "human":
             return new Human(gameManager, ownPlayerTurn);
         case "minimax":
-            return new MiniMax(gameManager, ownPlayerTurn);
+            return new MyNegaMaxImplementation(gameManager, ownPlayerTurn);
         case "NegaMax":
             return new NegaMiniMax(gameManager, ownPlayerTurn);
         default:
