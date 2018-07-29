@@ -1,34 +1,60 @@
 <!DOCTYPE>
 <html>
-    <head>
-        <title>MiniMax</title>
-        <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="./css/main.css">
-        <script src="./node_modules/systemjs/dist/system.src.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <div class="controls">
-                <div class="btn btn-success" id="newGame">new game</div>
-                <br/>
-                <input type="checkbox" id="cbShouldAIMakeMove" checked /><label for="cbShouldAIMakeMove">Should the AI make the next move?</label>
-            </div>
-            <div class="info" id="info">
 
+<head>
+    <title>MiniMax</title>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <script src="./node_modules/typescript/lib/typescript.js"></script>
+    <script src="./node_modules/systemjs/dist/system.src.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="controls">
+            <div class="btn btn-success" id="newGame">new game</div>
+            <br/> Who should play?
+            <br/>
+            <div class="player-select">
+                <div class="player-one">
+                    <h3>Player One</h3>
+                    <br/>
+                    <select id="onSelectPlayerOne">
+                        <option value="human">Human</option>
+                        <option value="minimax">MiniMax</option>
+                        <option value="NegaMax">NegaMax</option>
+                    </select>
+                </div>
+                <div class="player-two">
+                    <h3>Player Two</h3>
+                    <br/>
+                    <select id="onSelectPlayerTwo">
+                        <option value="human">Human</option>
+                        <option value="minimax">MiniMax</option>
+                        <option value="NegaMax">NegaMax</option>
+                    </select>
+                </div>
             </div>
-            <canvas id="gameCanvas" width="300" height="300"></canvas>
         </div>
+        </label>
+    </div>
+    <div class="container">
+    <div class="info" id="info"> </div>
+    </div>
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
+    </div>
 
-        <script>
-            SystemJS.config({
-                baseUrl: './build/',
-                packages: {
-                    '': {
-                        defaultExtension: "js"
-                    },
-                }
-            });
-            System.import("/build/index");
-        </script>
-    </body>
+    <script>
+        SystemJS.config({
+            baseUrl: './build/',
+            packages: {
+                '': {
+                    defaultExtension: "js"
+                },
+            }
+        });
+        System.import("/build/index");
+    </script>
+</body>
+
 </html>

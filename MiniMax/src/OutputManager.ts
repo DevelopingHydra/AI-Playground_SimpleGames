@@ -1,4 +1,4 @@
-import { PlayerTurn } from "./PlayerTurn";
+import { PlayerTurn } from "./Players/PlayerTurn";
 
 export interface OutputManager {
     writeFPS(fps: number): void;

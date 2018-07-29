@@ -1,5 +1,6 @@
 import { OutputManager } from "./OutputManager";
 import { GameManager } from "./GameManager";
+import { Player } from "./Players/Player";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas");
 const infoElement = document.querySelector<HTMLElement>("#info");
@@ -13,18 +14,18 @@ if (canvas !== null && infoElement !== null) {
 
         const btnNewGame = <HTMLDivElement>document.getElementById("newGame");
         const btnCanvasClick = <HTMLCanvasElement>document.getElementById("gameCanvas");
-        const cbShouldAIMakeNextMove = <HTMLInputElement>document.getElementById("cbShouldAIMakeMove");
+        const selectPlayerOne = <HTMLSelectElement>document.getElementById("onSelectPlayerOne");
+        const selectPlayerTwo = <HTMLSelectElement>document.getElementById("onSelectPlayerTwo");
 
-        if (btnCanvasClick !== null && btnNewGame !== null && cbShouldAIMakeNextMove !== null) {
+        if (btnCanvasClick !== null && btnNewGame !== null && selectPlayerOne !== null) {
             btnNewGame.onclick = () => gameManager.newGame();
             btnCanvasClick.onclick = (e: MouseEvent) => gameManager.onCanvasClick(e);
-            cbShouldAIMakeNextMove.onclick = (e: MouseEvent) => {
+            selectPlayerOne.onchange = (e: Event) => {
                 if (e !== null && e.target !== null) {
-                    const cb = <HTMLInputElement>e.target;
-                    gameManager.setShouldAIMakeNextMove(cb.checked);
+                    
                 }
             };
-            gameManager.setShouldAIMakeNextMove(cbShouldAIMakeNextMove.checked);
+            gameManager.setShouldAIMakeNextMove(selectPlayerOne.checked);
 
             // todo remove
             btnNewGame.click();
@@ -36,4 +37,10 @@ if (canvas !== null && infoElement !== null) {
     }
 } else {
     console.error("Unable to find the canvas and output element");
+}
+
+function convertPlayerStringToPlayer(str:string):Player{
+    switch(str){
+        case 
+    }
 }

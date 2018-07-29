@@ -1,5 +1,5 @@
 import { OutputManager } from "./OutputManager";
-import { PlayerTurn } from "./PlayerTurn";
+import { PlayerTurn } from "./Players/PlayerTurn";
 import { GameManager } from "./GameManager";
 
 

@@ -1,10 +1,10 @@
-import { PlayerTurn } from "./PlayerTurn";
+import { PlayerTurn } from "./Players/PlayerTurn";
 import { OutputManager } from "./OutputManager";
 import { Board } from "./Board";
 import { WinState } from "./WinState";
-import { AI } from "./AI";
-import { Point } from "./Point";
-import { deepClone } from "./util";
+import { AI } from "./Players/AI";
+import { Point } from "./Players/Point";
+import { deepClone } from "./Players/util";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;
@@ -23,7 +23,7 @@ export class GameManager {
         this.canvasContext = canvasContext;
         this.gameRunning = false;
 
-        this.AI = new AI(this);
+        this.AI = new AI(this, PlayerTurn.PlayerTwo);
     }
 
     public newGame(): void {
@@ -68,7 +68,7 @@ export class GameManager {
                     this.switchPlayer();
 
                     if (this.playerOnTurn === PlayerTurn.PlayerTwo && this.shouldAIMakeNextMove) {
-                        this.AI.makeTurn();
+                        this.AI.onIsOnTurn();
                     }
                 }
 
