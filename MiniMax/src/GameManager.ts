@@ -2,57 +2,56 @@ import { PlayerTurn } from "./Players/PlayerTurn";
 import { OutputManager } from "./OutputManager";
 import { Board } from "./Board";
 import { WinState } from "./WinState";
-import { AI } from "./Players/AI";
+import { NegaMiniMax } from "./Players/NegaMiniMax";
 import { Point } from "./Players/Point";
 import { deepClone } from "./Players/util";
+import { Player } from "./Players/Player";
+import { Human } from "./Players/Human";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;
     private board: Board;
     private outputManager: OutputManager;
-    private AI: AI;
 
-    private playerOnTurn: PlayerTurn = PlayerTurn.PlayerOne;
+    private playerOne: Player = new Human(this, PlayerTurn.PlayerOne);
+    private playerTwo: Player = new Human(this, PlayerTurn.PlayerTwo);
+    private playerOnTurn: Player = this.playerOne;
     private fields: number[][] = [];
     private gameRunning: boolean;
-    private shouldAIMakeNextMove: boolean = true;
 
     constructor(outputManager: OutputManager, canvasContext: CanvasRenderingContext2D) {
         this.board = new Board(outputManager, canvasContext, this);
         this.outputManager = outputManager;
         this.canvasContext = canvasContext;
         this.gameRunning = false;
-
-        this.AI = new AI(this, PlayerTurn.PlayerTwo);
     }
 
     public newGame(): void {
         this.initFields();
-        this.playerOnTurn = PlayerTurn.PlayerOne;
+        this.playerOnTurn = this.playerOne;
         this.board.startGame();
         this.outputManager.writeAppendMessage("Starting game");
         this.gameRunning = true;
+        this.playerOnTurn.onIsOnTurn();
     }
 
     public stopGame(): void {
-        this.board.stopGame();
-        this.gameRunning = false;
+        if (this.isGameRunning) {
+            this.board.stopGame();
+            this.gameRunning = false;
+        }
     }
 
     public onCanvasClick(event: MouseEvent): void {
-        const targetPoint: Point = this.calcFieldFromPosition(event);
-
-        this.makeTurn(targetPoint);
-    }
-
-    public setShouldAIMakeNextMove(value: boolean) {
-        this.shouldAIMakeNextMove = value;
+        if (this.isGameRunning) {
+            this.playerOnTurn.onClick(event, this.canvasContext);
+        }
     }
 
     public makeTurn(point: Point): boolean {
         if (this.gameRunning) {
             if (this.isFieldEmpty(point)) {
-                this.fields[point.x][point.y] = this.playerOnTurn;
+                this.fields[point.x][point.y] = this.playerOnTurn.getPlayerTurn();
                 console.info("making move: " + point);
 
                 const gameResult = this.isGameOver(this.fields);
@@ -65,11 +64,7 @@ export class GameManager {
                     else if (gameResult === WinState.PlayerTwoWon)
                         this.outputManager.writeAppendMessage("Game Over - PLAYER TWO WON");
                 } else {
-                    this.switchPlayer();
-
-                    if (this.playerOnTurn === PlayerTurn.PlayerTwo && this.shouldAIMakeNextMove) {
-                        this.AI.onIsOnTurn();
-                    }
+                    this.switchTurn();
                 }
 
                 return true;
@@ -83,13 +78,14 @@ export class GameManager {
         }
     }
 
-    private switchPlayer(): void {
-        if (this.playerOnTurn === PlayerTurn.PlayerOne)
-            this.playerOnTurn = PlayerTurn.PlayerTwo
+    private switchTurn(): void {
+        if (this.playerOnTurn.getPlayerTurn() === PlayerTurn.PlayerOne)
+            this.playerOnTurn = this.playerTwo;
         else
-            this.playerOnTurn = PlayerTurn.PlayerOne;
+            this.playerOnTurn = this.playerOne;
 
-        this.outputManager.writeTurn(this.playerOnTurn);
+        this.playerOnTurn.onIsOnTurn();
+        this.outputManager.writeTurn(this.playerOnTurn.getPlayerTurn());
     }
 
     public isGameOver(fieldToCheck: number[][]): WinState {
@@ -157,23 +153,6 @@ export class GameManager {
         return WinState.NoOneWonYet;
     }
 
-    private calcFieldFromPosition(event: MouseEvent): Point {
-        const canvasRect = this.canvasContext.canvas.getBoundingClientRect();
-
-        const realX = event.clientX - canvasRect.left;
-        const realY = event.clientY - canvasRect.top;
-
-        let x = Math.floor(realX / this.canvasContext.canvas.width * 3);
-        let y = Math.floor(realY / this.canvasContext.canvas.height * 3);
-
-        if (x > 2) x = 2;
-        if (y > 2) y = 2;
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-
-        return new Point(x, y);
-    }
-
     private initFields(): void {
         this.fields = [];
         for (let i = 0; i < 3; i++) {
@@ -202,6 +181,14 @@ export class GameManager {
     }
 
     public getCurrentPlayerTurn(): PlayerTurn {
-        return this.playerOnTurn;
+        return this.playerOnTurn.getPlayerTurn();
+    }
+
+    public setPlayerOne(playerOne: Player): void {
+        this.playerOne = playerOne;
+    }
+
+    public setPlayerTwo(playerTwo: Player): void {
+        this.playerTwo = playerTwo;
     }
 }

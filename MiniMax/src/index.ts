@@ -1,6 +1,9 @@
 import { OutputManager } from "./OutputManager";
 import { GameManager } from "./GameManager";
 import { Player } from "./Players/Player";
+import { MiniMax } from "./Players/MiniMax";
+import { PlayerTurn } from "./Players/PlayerTurn";
+import { NegaMiniMax } from "./Players/NegaMiniMax";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas");
 const infoElement = document.querySelector<HTMLElement>("#info");
@@ -22,10 +25,17 @@ if (canvas !== null && infoElement !== null) {
             btnCanvasClick.onclick = (e: MouseEvent) => gameManager.onCanvasClick(e);
             selectPlayerOne.onchange = (e: Event) => {
                 if (e !== null && e.target !== null) {
-                    
+                    const playerOne = convertPlayerStringToPlayer(selectPlayerOne.value, gameManager, PlayerTurn.PlayerOne);
+                    gameManager.setPlayerOne(playerOne);
                 }
             };
-            gameManager.setShouldAIMakeNextMove(selectPlayerOne.checked);
+            selectPlayerTwo.onchange = (e: Event) => {
+                if (e !== null && e.target !== null) {
+                    const playerTwo = convertPlayerStringToPlayer(selectPlayerTwo.value, gameManager, PlayerTurn.PlayerTwo);
+                    gameManager.setPlayerTwo(playerTwo);
+                }
+            };
+            // gameManager.setShouldAIMakeNextMove(selectPlayerOne.checked);
 
             // todo remove
             btnNewGame.click();
@@ -39,8 +49,15 @@ if (canvas !== null && infoElement !== null) {
     console.error("Unable to find the canvas and output element");
 }
 
-function convertPlayerStringToPlayer(str:string):Player{
-    switch(str){
-        case 
+function convertPlayerStringToPlayer(str: string, gameManager: GameManager, ownPlayerTurn: PlayerTurn): Player {
+    switch (str) {
+        case "human":
+            throw new Error("not implemented yet");
+        case "minimax":
+            return new MiniMax(gameManager, ownPlayerTurn);
+        case "NegaMax":
+            return new NegaMiniMax(gameManager, ownPlayerTurn);
+        default:
+            throw new Error("Unknown Player selected");
     }
 }
