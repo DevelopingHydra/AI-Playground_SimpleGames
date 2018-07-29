@@ -4,6 +4,7 @@ import { Player } from "./Players/Player";
 import { MiniMax } from "./Players/MiniMax";
 import { PlayerTurn } from "./Players/PlayerTurn";
 import { NegaMiniMax } from "./Players/NegaMiniMax";
+import { Human } from "./Players/Human";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas");
 const infoElement = document.querySelector<HTMLElement>("#info");
@@ -52,7 +53,7 @@ if (canvas !== null && infoElement !== null) {
 function convertPlayerStringToPlayer(str: string, gameManager: GameManager, ownPlayerTurn: PlayerTurn): Player {
     switch (str) {
         case "human":
-            throw new Error("not implemented yet");
+            return new Human(gameManager, ownPlayerTurn);
         case "minimax":
             return new MiniMax(gameManager, ownPlayerTurn);
         case "NegaMax":

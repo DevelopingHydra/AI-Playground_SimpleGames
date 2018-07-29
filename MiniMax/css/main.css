@@ -31,3 +31,11 @@ canvas#gameCanvas {
     margin: .5rem 1rem;
     display: inline-block;
 }
+
+.player-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-select div {margin: 1rem;}
