@@ -10,7 +10,7 @@ export class OutputManager implements OutputManager {
     private eContainer: Element;
     private eTurn: Element;
     private eFPS: Element;
-    private eTextarea: Element;
+    private eTextarea: HTMLTextAreaElement;
 
     constructor(outputElement: Element) {
         this.eContainer = outputElement;
@@ -26,18 +26,24 @@ export class OutputManager implements OutputManager {
     }
 
 
-    writeFPS(fps: number): void {
+    public writeFPS(fps: number): void {
         this.eFPS.innerHTML = "FPS: " + fps;
     }
-    writeTurn(turn: PlayerTurn): void {
+
+    public writeTurn(turn: PlayerTurn): void {
         if (turn === PlayerTurn.PlayerOne) {
             this.eTurn.innerHTML = "X"
         } else {
             this.eTurn.innerHTML = "O";
         }
     }
-    writeAppendMessage(message: string): void {
+
+    public writeAppendMessage(message: string): void {
         this.eTextarea.innerHTML += message + "\n";
-        this.eTextarea.scrollTop = this.eTextarea.scrollHeight;
+        this.scrollTextareaToBottom(this.eTextarea);
+    }
+
+    private scrollTextareaToBottom(textarea: HTMLTextAreaElement): void {
+        textarea.scrollTop = textarea.scrollHeight;
     }
 }

@@ -1,64 +1,39 @@
-import { OutputManager } from "./OutputManager";
-import { GameManager } from "./GameManager";
-import { Player } from "./Players/Player";
-import { MyNegaMaxImplementation } from "./Players/MyNegaMaxImplementation";
-import { PlayerTurn } from "./Players/PlayerTurn";
-import { NegaMiniMax } from "./Players/NegaMiniMax";
-import { Human } from "./Players/Human";
+import { GameLoader } from "./GameLoader";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas");
-const infoElement = document.querySelector<HTMLElement>("#info");
+const infoElement = document.querySelector<HTMLDivElement>("#info");
 
-if (canvas !== null && infoElement !== null) {
-    const canvasContext = canvas.getContext("2d");
+const outputPlayerOne = <HTMLDivElement>document.getElementById("output-playerOne");
+const outputPlayerTwo = <HTMLDivElement>document.getElementById("output-playerTwo");
 
-    if (canvasContext !== null) {
-        const outputManager: OutputManager = new OutputManager(infoElement);
-        const gameManager: GameManager = new GameManager(outputManager, canvasContext);
+const btnNewGame = <HTMLDivElement>document.getElementById("newGame");
+const btnCanvasClick = <HTMLCanvasElement>document.getElementById("gameCanvas");
 
-        const btnNewGame = <HTMLDivElement>document.getElementById("newGame");
-        const btnCanvasClick = <HTMLCanvasElement>document.getElementById("gameCanvas");
-        const selectPlayerOne = <HTMLSelectElement>document.getElementById("onSelectPlayerOne");
-        const selectPlayerTwo = <HTMLSelectElement>document.getElementById("onSelectPlayerTwo");
+const selectPlayerOne = <HTMLSelectElement>document.getElementById("onSelectPlayerOne");
+const selectPlayerTwo = <HTMLSelectElement>document.getElementById("onSelectPlayerTwo");
 
-        if (btnCanvasClick !== null && btnNewGame !== null && selectPlayerOne !== null) {
-            btnNewGame.onclick = () => gameManager.newGame();
-            btnCanvasClick.onclick = (e: MouseEvent) => gameManager.onCanvasClick(e);
-            selectPlayerOne.onchange = (e: Event) => {
-                if (e !== null && e.target !== null) {
-                    const playerOne = convertPlayerStringToPlayer(selectPlayerOne.value, gameManager, PlayerTurn.PlayerOne);
-                    gameManager.setPlayerOne(playerOne);
-                }
-            };
-            selectPlayerTwo.onchange = (e: Event) => {
-                if (e !== null && e.target !== null) {
-                    const playerTwo = convertPlayerStringToPlayer(selectPlayerTwo.value, gameManager, PlayerTurn.PlayerTwo);
-                    gameManager.setPlayerTwo(playerTwo);
-                }
-            };
-            // gameManager.setShouldAIMakeNextMove(selectPlayerOne.checked);
+if (canvas !== null && infoElement !== null && outputPlayerOne !== null && outputPlayerTwo !== null) {
+    if (btnCanvasClick !== null && btnNewGame !== null && selectPlayerOne !== null) {
+        const canvasContext = canvas.getContext("2d");
 
-            // todo remove
-            btnNewGame.click();
+        if (canvasContext !== null) {
+            const gameLoader = new GameLoader(
+                canvasContext,
+                outputPlayerOne,
+                outputPlayerTwo,
+                infoElement,
+                btnNewGame,
+                btnCanvasClick,
+                selectPlayerOne,
+                selectPlayerTwo
+            );
+            gameLoader.startGame();
         } else {
-            console.error("Unable to attach listeners to the buttons");
+            console.error("Unable to get the Context from the canvas");
         }
     } else {
-        console.error("Unable to get the Context from the canvas");
+        console.error("Unable to attach listeners to the buttons");
     }
 } else {
-    console.error("Unable to find the canvas and output element");
-}
-
-function convertPlayerStringToPlayer(str: string, gameManager: GameManager, ownPlayerTurn: PlayerTurn): Player {
-    switch (str) {
-        case "human":
-            return new Human(gameManager, ownPlayerTurn);
-        case "minimax":
-            return new MyNegaMaxImplementation(gameManager, ownPlayerTurn);
-        case "NegaMax":
-            return new NegaMiniMax(gameManager, ownPlayerTurn);
-        default:
-            throw new Error("Unknown Player selected");
-    }
+    console.error("Unable to find the canvas and output elements");
 }

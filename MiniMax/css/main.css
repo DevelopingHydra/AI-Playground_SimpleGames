@@ -16,7 +16,6 @@ canvas#gameCanvas {
 }
 
 .info {
-    margin: 2rem;
     background-color: lightgray;
     border-radius: 15px;
     width: 100%;
@@ -38,4 +37,12 @@ canvas#gameCanvas {
     justify-content: center;
 }
 
-.player-select div {margin: 1rem;}
+.player-select div {
+    margin: 1rem;
+}
+
+.row {
+    margin: 1rem 0;
+    text-align: center;
+    width: 100%;
+}

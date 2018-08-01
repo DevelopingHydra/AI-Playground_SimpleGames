@@ -1,42 +1,61 @@
 import { PlayerTurn } from "./Players/PlayerTurn";
 import { OutputManager } from "./OutputManager";
-import { Board } from "./Board";
+import { TicTacToeDrawingBoard } from "./Players/Board/TicTacToeDrawingBoard";
 import { WinState } from "./WinState";
 import { Point } from "./Players/Point";
-import { deepClone } from "./Players/util";
 import { Player } from "./Players/Player";
+import { TicTacToeBoard } from "./Players/Board/TicTacToeBoard";
+import { IBoard } from "./Players/Board/Board";
+import { Move } from "./Players/Board/Move";
 import { Human } from "./Players/Human";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;
-    private board: Board;
+    private drawingBoard: TicTacToeDrawingBoard;
     private outputManager: OutputManager;
 
-    private playerOne: Player = new Human(this, PlayerTurn.PlayerOne);
-    private playerTwo: Player = new Human(this, PlayerTurn.PlayerTwo);
+    private playerOne: Player;
+    private playerTwo: Player;
     private playerOnTurn: Player = this.playerOne;
-    private fields: number[][] = [];
     private gameRunning: boolean;
 
-    constructor(outputManager: OutputManager, canvasContext: CanvasRenderingContext2D) {
-        this.board = new Board(outputManager, canvasContext, this);
+    private gameBoard: IBoard;
+
+    constructor(canvasContext: CanvasRenderingContext2D,
+        outputManager: OutputManager,
+        gameBoard: IBoard,
+        outputManagerForPlayerOne: OutputManager,
+        outputManagerForPlayerTwo: OutputManager
+    ) {
+        this.drawingBoard = new TicTacToeDrawingBoard(outputManager, canvasContext, this);
+
         this.outputManager = outputManager;
         this.canvasContext = canvasContext;
+
+        this.gameBoard = gameBoard;
+
+        this.playerOne = new Human(PlayerTurn.PlayerOne, outputManagerForPlayerOne, this);
+        this.playerTwo = new Human(PlayerTurn.PlayerTwo, outputManagerForPlayerTwo, this);
+
         this.gameRunning = false;
     }
 
     public newGame(): void {
-        this.initFields();
+        this.gameBoard.resetBoard();
+        this.drawingBoard.startGame();
+
         this.playerOnTurn = this.playerOne;
-        this.board.startGame();
-        this.outputManager.writeAppendMessage("Starting game");
         this.gameRunning = true;
+
+        this.outputManager.writeAppendMessage("Starting game");
+        this.outputManager.writeTurn(this.playerOnTurn.getPlayerTurn());
+
         this.playerOnTurn.onIsOnTurn();
     }
 
     public stopGame(): void {
         if (this.isGameRunning) {
-            this.board.stopGame();
+            this.drawingBoard.stopGame();
             this.gameRunning = false;
         }
     }
@@ -47,14 +66,17 @@ export class GameManager {
         }
     }
 
-    public makeTurn(point: Point): boolean {
+    public makeTurn(move: Move): boolean {
         if (this.gameRunning) {
-            if (this.isFieldEmpty(point)) {
-                this.fields[point.x][point.y] = this.playerOnTurn.getPlayerTurn();
-                console.info("making move: " + point);
 
-                const gameResult = this.isGameOver(this.fields);
-                if (gameResult !== WinState.NoOneWonYet) {
+            const newMove: Move = new Move(move.getPosition(), this.playerOnTurn.getPlayerTurn());
+            const successMakingMove = this.gameBoard.makeMove(newMove);
+
+            if (successMakingMove) {
+                const gameResult = this.gameBoard.isGameOver();
+                if (gameResult === WinState.NoOneWonYet) {
+                    this.switchTurn();
+                } else {
                     this.stopGame();
                     if (gameResult === WinState.Draw)
                         this.outputManager.writeAppendMessage("Game Over - DRAW");
@@ -62,8 +84,6 @@ export class GameManager {
                         this.outputManager.writeAppendMessage("Game Over - PLAYER ONE WON");
                     else if (gameResult === WinState.PlayerTwoWon)
                         this.outputManager.writeAppendMessage("Game Over - PLAYER TWO WON");
-                } else {
-                    this.switchTurn();
                 }
 
                 return true;
@@ -87,93 +107,13 @@ export class GameManager {
         this.outputManager.writeTurn(this.playerOnTurn.getPlayerTurn());
     }
 
-    public isGameOver(fieldToCheck: number[][]): WinState {
-        // horizontal
-        for (let i = 0; i < fieldToCheck.length; i++) {
-            let allFieldsPlayerOne = true;
-            let allFieldsPlayerTwo = true;
-            for (let j = 0; j < fieldToCheck[i].length; j++) {
-                if (fieldToCheck[i][j] !== PlayerTurn.PlayerOne)
-                    allFieldsPlayerOne = false;
-                if (fieldToCheck[i][j] !== PlayerTurn.PlayerTwo)
-                    allFieldsPlayerTwo = false;
-            }
-            if (allFieldsPlayerOne)
-                return WinState.PlayerOneWon;
-            if (allFieldsPlayerTwo)
-                return WinState.PlayerTwoWon;
-        }
 
-        // vertical
-        for (let j = 0; j < fieldToCheck.length; j++) {
-            let allFieldsPlayerOne = true;
-            let allFieldsPlayerTwo = true;
-            for (let i = 0; i < fieldToCheck[j].length; i++) {
-                if (fieldToCheck[i][j] !== PlayerTurn.PlayerOne)
-                    allFieldsPlayerOne = false;
-                if (fieldToCheck[i][j] !== PlayerTurn.PlayerTwo)
-                    allFieldsPlayerTwo = false;
-            }
-            if (allFieldsPlayerOne)
-                return WinState.PlayerOneWon;
-            if (allFieldsPlayerTwo)
-                return WinState.PlayerTwoWon;
-        }
 
-        // diagonal
-        if (fieldToCheck[0][0] === fieldToCheck[1][1] && fieldToCheck[1][1] === fieldToCheck[2][2]) {
-            if (fieldToCheck[1][1] === PlayerTurn.PlayerOne)
-                return WinState.PlayerOneWon;
-            else if (fieldToCheck[1][1] === PlayerTurn.PlayerTwo)
-                return WinState.PlayerTwoWon;
-        }
 
-        if (fieldToCheck[2][0] === fieldToCheck[1][1] && fieldToCheck[1][1] === fieldToCheck[0][2]) {
-            if (fieldToCheck[1][1] === PlayerTurn.PlayerOne)
-                return WinState.PlayerOneWon;
-            else if (fieldToCheck[1][1] === PlayerTurn.PlayerTwo)
-                return WinState.PlayerTwoWon;
-        }
 
-        // check for draw
-        let isEveryFieldUsedUp = true;
-        for (let j = 0; j < fieldToCheck.length; j++) {
-            for (let i = 0; i < fieldToCheck[j].length; i++) {
-                if (fieldToCheck[i][j] === -1) {
-                    isEveryFieldUsedUp = false;
-                    break;
-                }
-            }
-        }
-        if (isEveryFieldUsedUp)
-            return WinState.Draw;
 
-        // noone won yet
-        return WinState.NoOneWonYet;
-    }
-
-    private initFields(): void {
-        this.fields = [];
-        for (let i = 0; i < 3; i++) {
-            this.fields[i] = [];
-            for (let j = 0; j < 3; j++) {
-                this.fields[i][j] = -1;
-            }
-        }
-
-        // todo remove, for testing
-        // this.fields = [[-1, -1, 2], [-1, -1, -1], [-1, -1, -1]];
-    }
-
-    private isFieldEmpty(point: Point): boolean {
-        return this.fields[point.x][point.y] === -1;
-    }
 
     /* ###### */
-
-    public getFields(): number[][] {
-        return deepClone(this.fields);
-    }
 
     public isGameRunning(): boolean {
         return this.gameRunning;
@@ -189,5 +129,9 @@ export class GameManager {
 
     public setPlayerTwo(playerTwo: Player): void {
         this.playerTwo = playerTwo;
+    }
+
+    public getBoard(): IBoard {
+        return this.gameBoard.clone();
     }
 }
