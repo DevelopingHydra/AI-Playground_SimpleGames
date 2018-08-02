@@ -1,8 +1,6 @@
 import { GameManager } from "../GameManager";
 import { PlayerTurn } from "./PlayerTurn";
-import { Point } from "./Point";
 import { OutputManager } from "../OutputManager";
-import { IBoard } from "./Board/Board";
 
 export abstract class Player {
     protected ownPlayerTurn: PlayerTurn;

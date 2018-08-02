@@ -1,6 +1,6 @@
 import { Player } from "./Player";
 import { Point } from "./Point";
-import { Move } from "./Board/Move";
+import { Move } from "../Board/Move";
 
 export class Human extends Player {
 

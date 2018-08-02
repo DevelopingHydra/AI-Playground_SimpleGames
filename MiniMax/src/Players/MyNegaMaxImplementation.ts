@@ -2,8 +2,8 @@ import { Player } from "./Player";
 import { PlayerTurn } from "./PlayerTurn";
 import { Point } from "./Point";
 import { WinState } from "../WinState";
-import { IBoard } from "./Board/Board";
-import { Move } from "./Board/Move";
+import { IBoard } from "../Board/Board";
+import { Move } from "../Board/Move";
 import { getOtherPlayer } from "./util";
 
 export class MyNegaMaxImplementation extends Player {

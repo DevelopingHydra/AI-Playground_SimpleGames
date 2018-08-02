@@ -5,8 +5,9 @@ import { Player } from "./Players/Player";
 import { Human } from "./Players/Human";
 import { MyNegaMaxImplementation } from "./Players/MyNegaMaxImplementation";
 import { NegaMiniMax } from "./Players/NegaMiniMax";
-import { IBoard } from "./Players/Board/Board";
-import { TicTacToeBoard } from "./Players/Board/TicTacToeBoard";
+import { IBoard } from "./Board/Board";
+import { TicTacToeBoard } from "./Board/TicTacToeBoard";
+import { TicTacToeMiniMax } from "./Players/MiniMax/TicTacToe_MiniMax";
 
 export class GameLoader {
     private outputGame: HTMLDivElement;
@@ -79,7 +80,8 @@ export class GameLoader {
             case "human":
                 return new Human(ownPlayerTurn, outputManager, this.gameManager);
             case "minimax":
-                return new MyNegaMaxImplementation(ownPlayerTurn, outputManager, this.gameManager);
+                // return new MyNegaMaxImplementation(ownPlayerTurn, outputManager, this.gameManager);
+                return new TicTacToeMiniMax(ownPlayerTurn, outputManager, this.gameManager);
             case "NegaMax":
                 return new NegaMiniMax(ownPlayerTurn, outputManager, this.gameManager);
             default:

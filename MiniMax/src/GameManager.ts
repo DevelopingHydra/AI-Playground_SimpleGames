@@ -1,13 +1,12 @@
 import { PlayerTurn } from "./Players/PlayerTurn";
 import { OutputManager } from "./OutputManager";
-import { TicTacToeDrawingBoard } from "./Players/Board/TicTacToeDrawingBoard";
 import { WinState } from "./WinState";
 import { Point } from "./Players/Point";
 import { Player } from "./Players/Player";
-import { TicTacToeBoard } from "./Players/Board/TicTacToeBoard";
-import { IBoard } from "./Players/Board/Board";
-import { Move } from "./Players/Board/Move";
 import { Human } from "./Players/Human";
+import { TicTacToeDrawingBoard } from "./Board/TicTacToeDrawingBoard";
+import { IBoard } from "./Board/Board";
+import { Move } from "./Board/Move";
 
 export class GameManager {
     private canvasContext: CanvasRenderingContext2D;

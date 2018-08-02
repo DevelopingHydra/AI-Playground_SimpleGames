@@ -4,8 +4,8 @@ import { WinState } from "../WinState";
 import { Point } from "./Point";
 import {  getOtherPlayer } from "./util";
 import { Player } from "./Player";
-import { IBoard } from "./Board/Board";
-import { Move } from "./Board/Move";
+import { Move } from "../Board/Move";
+import { IBoard } from "../Board/Board";
 
 export class NegaMiniMax extends Player {
 
