@@ -1,10 +1,11 @@
 import { GameObject } from "./GameObject";
 import { Vector } from "../Vector";
-import { Dot } from "./Dot";
+import { AIDot } from "./AIDot";
+import { Ball } from "./Ball";
 
-export class Goal extends Dot {
+export class Goal extends Ball {
     public constructor(position: Vector) {
-        super();
+        super(position);
         this.position = position;
 
         this.size = 10;
@@ -12,4 +13,6 @@ export class Goal extends Dot {
     }
 
 
+    public move(): void {
+    }
 }

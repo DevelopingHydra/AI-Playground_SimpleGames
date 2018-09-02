@@ -31,4 +31,10 @@ export class Vector {
         return sideLengthC;
     }
 
+    public clone(): Vector {
+        const newVector = new Vector(this.x, this.y);
+        newVector.setLimit(this.limit);
+        return newVector;
+    }
+
 }
