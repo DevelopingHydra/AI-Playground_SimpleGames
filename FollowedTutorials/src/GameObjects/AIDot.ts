@@ -13,6 +13,7 @@ export class AIDot extends Ball {
     private fitness: number = 0;
     private reachedGoal: Boolean = false;
     private goal: Goal;
+    private isBest: boolean = false;
 
     public constructor(position: Vector, goal: Goal) {
         super(position);
@@ -47,7 +48,7 @@ export class AIDot extends Ball {
 
     public calculateFitness(): void {
         if (this.reachedGoal) {
-            this.fitness = 1 / 16 + 10000 / Math.pow(this.brain.getNumSteps(), 2);
+            this.fitness = 1 / 16 + 1000 / Math.pow(this.getStepsTaken(), 2);
         } else {
             const distanceToGoal = this.position.distanceTo(this.goal.getPosition());
             this.fitness = 1 / Math.pow(distanceToGoal, 2);
@@ -65,14 +66,19 @@ export class AIDot extends Ball {
     }
 
     public mutateBrain(): void {
-        this.brain.mutate();
+        if (!this.isBest)
+            this.brain.mutate();
     }
 
     /* ########################################## */
 
     public getFitness(): number { return this.fitness; }
     public setBest(): void {
+        this.isBest = true;
         this.color = "blue";
         this.size = this.size * 2;
+    }
+    public getStepsTaken(): number {
+        return this.brain.getNumSteps();
     }
 }

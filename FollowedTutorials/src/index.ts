@@ -41,7 +41,7 @@ if (
 
         controlMutationRate.oninput = (e) => {
             const target = <HTMLInputElement>e.target;
-            Settings.instance.setMutationRate(parseInt(target.value));
+            Settings.instance.setMutationRate(100 / parseInt(target.value));
         }
 
         controlPopulationSize.oninput = (e) => {

@@ -25,7 +25,14 @@ export class Population {
     }
 
     public updateInhabitants(canvasContext: CanvasRenderingContext2D): void {
-        this.dots.forEach(dot => dot.update(canvasContext));
+        this.dots.forEach(dot => {
+            if (Settings.instance.shouldKillAllWorseThanBest()
+                && this.bestInhabitant
+                && dot.getStepsTaken() > this.bestInhabitant.getStepsTaken()) {
+                dot.die();
+            }
+            dot.update(canvasContext)
+        });
 
         if (this.areAllDotsDead()) {
             this.startNextGeneration();
@@ -53,6 +60,7 @@ export class Population {
 
     public startNextGeneration(): void {
         this.numGeneration++;
+
         this.calculateFitnesses();
         this.naturalSelection();
         this.mutateInhabitants();

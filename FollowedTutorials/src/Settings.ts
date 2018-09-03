@@ -5,6 +5,7 @@ export class Settings {
     private populationSize: number = 2;
     private fps: number = 0;
     private brainSteps: number = 300;
+    private killAllWorseThanBest: boolean = false;
 
     /* ################################################ */
     public setMutationRate(newRate: number): void { this.mutationRate = newRate };
@@ -18,4 +19,7 @@ export class Settings {
 
     public setBrainSteps(newSteps: number): void { this.brainSteps = newSteps }
     public getBrainSteps(): number { return this.brainSteps }
+
+    public doKillAllWorseThanBest(doIt: boolean): void { this.killAllWorseThanBest = doIt }
+    public shouldKillAllWorseThanBest(): boolean { return this.killAllWorseThanBest }
 }
