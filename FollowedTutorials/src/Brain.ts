@@ -1,10 +1,10 @@
 import { Vector } from "./Vector";
+import { MathHelper } from "./MathHelper";
+import { Settings } from "./Settings";
 
 export class Brain {
     private directions: Vector[] = [];
     private currentStep: number = 0;
-
-    private mutationRate: number = 0.05;
 
     public constructor(size: number) {
         this.initDirections(size);
@@ -13,8 +13,7 @@ export class Brain {
     private initDirections(size: number): void {
         this.directions = [];
         for (let i = 0; i < size; i++) {
-            const randomAngle = Math.random() * Math.PI * 2;
-            this.directions.push(Vector.fromAngle(randomAngle));
+            this.directions.push(MathHelper.getRandomVector());
         }
     }
 
@@ -39,9 +38,8 @@ export class Brain {
     public mutate(): void {
         for (let i = 0; i < this.directions.length; i++) {
             const rand = Math.random();
-            if (rand < this.mutationRate) {
-                const randomAngle = Math.random() * Math.PI * 2;
-                this.directions[i] = Vector.fromAngle(randomAngle);
+            if (rand < Settings.instance.getMutationRate()) {
+                this.directions[i] = MathHelper.getRandomVector();
             }
         }
     }

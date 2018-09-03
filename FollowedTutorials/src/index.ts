@@ -1,4 +1,5 @@
 import { GameManager } from "./GameManager";
+import { Settings } from "./Settings";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas");
 
@@ -8,7 +9,9 @@ const generationOutputElement = document.querySelector<HTMLDivElement>("#generat
 const levelSelect = document.querySelector<HTMLSelectElement>("#control-level");
 const btnStop = document.querySelector<HTMLDivElement>("#control-stop");
 const btnStart = document.querySelector<HTMLDivElement>("#control-start");
-const fpsSlider = document.querySelector<HTMLInputElement>("#control-fpsSlider");
+const controlFPS = document.querySelector<HTMLInputElement>("#control-fps");
+const controlPopulationSize = document.querySelector<HTMLInputElement>("#control-populationSize");
+const controlMutationRate = document.querySelector<HTMLInputElement>("#control-mutationRate");
 
 
 if (
@@ -18,7 +21,9 @@ if (
     && levelSelect !== null
     && btnStop !== null
     && btnStart !== null
-    && fpsSlider !== null
+    && controlFPS !== null
+    && controlMutationRate !== null
+    && controlPopulationSize !== null
 ) {
     const canvasContext = canvas.getContext("2d");
     if (canvasContext !== null) {
@@ -29,9 +34,19 @@ if (
         btnStop.onclick = () => gm.stopGame();
         btnStart.onclick = () => gm.startGame();
 
-        fpsSlider.oninput = (e) => {
+        controlFPS.oninput = (e) => {
             const target = <HTMLInputElement>e.target;
             gm.setFPS(parseInt(target.value));
+        }
+
+        controlMutationRate.oninput = (e) => {
+            const target = <HTMLInputElement>e.target;
+            Settings.instance.setMutationRate(parseInt(target.value));
+        }
+
+        controlPopulationSize.oninput = (e) => {
+            const target = <HTMLInputElement>e.target;
+            Settings.instance.setPopulationSize(parseInt(target.value));
         }
 
         levelSelect.onchange = (e) => {

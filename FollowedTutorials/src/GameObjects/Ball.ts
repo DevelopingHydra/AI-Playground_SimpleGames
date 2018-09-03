@@ -14,10 +14,10 @@ export abstract class Ball extends GameObject {
     }
 
     protected isOutOfBounce(canvasContext: CanvasRenderingContext2D): Boolean {
-        return this.position.x < 0
-            || this.position.y < 0
-            || this.position.x > canvasContext.canvas.width
-            || this.position.y > canvasContext.canvas.height;
+        return this.position.x - this.size < 0
+            || this.position.y - this.size < 0
+            || this.position.x + this.size > canvasContext.canvas.width
+            || this.position.y + this.size > canvasContext.canvas.height;
     }
 
     public isPointWithin(point: Vector): Boolean {

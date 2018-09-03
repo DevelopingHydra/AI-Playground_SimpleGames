@@ -29,34 +29,22 @@ export class GameManager {
     public loadLevel(level: number): void {
         this.resetWorld();
 
-        if (level === 1) {
-            const startPoint = new Vector(400, 800 - 50);
-            const endPoint = new Vector(400, 50);
-            const goal = new Goal(endPoint);
-            this.population = new Population(500, startPoint, goal);
-            this.addGameObject(goal);
 
-        } else if (level === 2) {
-            const startPoint = new Vector(400, 800 - 50);
-            const endPoint = new Vector(400, 50);
-            const goal = new Goal(endPoint);
-            this.population = new Population(500, startPoint, goal);
-            this.addGameObject(goal);
+        const startPoint = new Vector(400, 800 - 50);
+        const endPoint = new Vector(400, 50);
+        const goal = new Goal(endPoint);
+        this.population = new Population(startPoint, goal);
+        this.addGameObject(goal);
 
+        if (level === 1) { }
+        else if (level === 2) {
             // obstacles
             const wall = new Wall(new Vector(200, 100), 300, 100);
             this.addGameObject(wall);
         } else if (level === 3) {
-            const startPoint = new Vector(400, 800 - 50);
-            const endPoint = new Vector(400, 50);
-            const goal = new Goal(endPoint);
-            this.population = new Population(500, startPoint, goal);
-            this.addGameObject(goal);
-
             // obstacles
             const wall = new Wall(new Vector(0, 100), 600, 100);
             this.addGameObject(wall);
-
             const wall2 = new Wall(new Vector(200, 400), 800, 100);
             this.addGameObject(wall2);
         }

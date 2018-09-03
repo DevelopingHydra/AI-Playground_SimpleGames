@@ -1,17 +1,27 @@
 import { AIDot } from "./AIDot";
 import { Goal } from "./Goal";
 import { Vector } from "../Vector";
+import { Settings } from "../Settings";
 
 export class Population {
     private dots: AIDot[] = [];
     private fitnessSum: number = -1;
-    private numGeneration: number = 0;
+    private numGeneration: number = 1;
     private bestInhabitant: AIDot | null = null;
 
-    public constructor(size: number, startPoint: Vector, goal: Goal) {
-        for (let i = 0; i < size; i++) {
-            this.dots.push(new AIDot(startPoint, goal));
+    public constructor(startPoint: Vector, goal: Goal) {
+        this.resetInhabitants(startPoint, goal);
+    }
+
+    private resetInhabitants(startPoint: Vector, goal: Goal): void {
+        for (let i = 0; i < Settings.instance.getPopulationSize(); i++) {
+            this.dots.push(new AIDot(startPoint.clone(), goal));
         }
+
+        console.log("----------------------------")
+        console.log("population: " + this.dots.length)
+        console.log("num gerneration: " + this.numGeneration)
+        console.log("----------------------------")
     }
 
     public updateInhabitants(canvasContext: CanvasRenderingContext2D): void {
@@ -51,7 +61,6 @@ export class Population {
         console.log("population: " + this.dots.length)
         console.log("num gerneration: " + this.numGeneration)
         console.log("----------------------------")
-
     }
 
     public mutateInhabitants(): any {
@@ -63,7 +72,7 @@ export class Population {
 
         this.calculateFitnessSum();
 
-        for (let i = 0; i < this.dots.length - 1; i++) {
+        for (let i = 0; i < Settings.instance.getPopulationSize() - 1; i++) {
             const parent = this.selectParent();
             newDots.push(parent.makeBaby());
         };

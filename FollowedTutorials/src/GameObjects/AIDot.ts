@@ -1,8 +1,8 @@
 import { Vector } from "../Vector"
-import { GameObject } from "./GameObject"
 import { Brain } from "../Brain";
 import { Goal } from "./Goal";
 import { Ball } from "./Ball";
+import { Settings } from "../Settings";
 
 export class AIDot extends Ball {
     private velocity: Vector;
@@ -19,7 +19,7 @@ export class AIDot extends Ball {
 
         this.startingPosition = position.clone();
 
-        this.brain = new Brain(200);
+        this.brain = new Brain(Settings.instance.getBrainSteps());
 
         this.velocity = new Vector(0, 0);
         this.acceleration = new Vector(0, 0);
