@@ -1,0 +1,48 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+canvas#gameCanvas {
+    border: 1px black solid;
+    width: 30rem;
+    height: 40rem;
+}
+
+.controls {
+    margin: 3rem;
+}
+
+.info {
+    background-color: lightgray;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.info textarea {
+    width: 100%;
+    height: 8rem;
+}
+
+.info span {
+    margin: .5rem 1rem;
+    display: inline-block;
+}
+
+.player-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-select div {
+    margin: 1rem;
+}
+
+.row {
+    margin: 1rem 0;
+    text-align: center;
+    width: 100%;
+}

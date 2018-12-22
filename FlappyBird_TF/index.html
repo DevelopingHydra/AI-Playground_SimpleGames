@@ -1,0 +1,47 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <title>Flappy Bird with TensorFlow</title>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <script src="./node_modules/typescript/lib/typescript.js"></script>
+    <script src="./node_modules/systemjs/dist/system.src.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="btn btn-success" id="newGame">new game</div>
+            </div>
+            <div class="col-12">
+                Press Spacebar or click on the game to jump. Press "n" to restart.
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="info" id="info"> </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <canvas id="gameCanvas" width="300" height="400" tabindex="1"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        SystemJS.config({
+            baseUrl: './build/',
+            packages: {
+                '': {
+                    defaultExtension: "js"
+                },
+            }
+        });
+        System.import("/build/index");
+    </script>
+</body>
+
+</html>
